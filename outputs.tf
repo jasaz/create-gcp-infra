@@ -1,3 +1,4 @@
+/* 
 output "cluster_name" {
   description = "The name of the GKE cluster"
   value       = google_container_cluster.primary.name
@@ -33,3 +34,4 @@ output "gke_deployer_sa_email" {
   description = "The email of the GKE deployer service account"
   value       = google_service_account.gke_deployer.email
 }
+*/
