@@ -5,7 +5,7 @@ resource "google_container_cluster" "primary" {
   enable_autopilot    = true
 
   network             = google_compute_network.vpc.id
-  subnetwork          = google_compute_subnetwork.subnet.id
+  subnetwork          = google_compute_subnetwork.private-subnet.id
 
   ip_allocation_policy {
     cluster_secondary_range_name  = "pods"
