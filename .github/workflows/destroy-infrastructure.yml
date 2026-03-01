@@ -43,8 +43,7 @@ jobs:
           terraform_wrapper: false
 
       - name: Terraform Init
-        run: terraform init
+        run: terraform init -backend-config="bucket=${{ secrets.TFSTATE_GCS_BUCKET }}"
 
       - name: Terraform Destroy
-        if: github.ref == 'refs/heads/main'
         run: terraform destroy -auto-approve -input=false
