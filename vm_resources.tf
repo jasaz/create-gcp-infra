@@ -2,9 +2,9 @@
 
 # GCS bucket for MongoDB backups — publicly readable
 resource "google_storage_bucket" "mongodb_backups" {
-  name          = "${var.project_id}-mongodb-backups"
-  location      = var.region
-  force_destroy = true
+  name                        = "${var.project_id}-mongodb-backups"
+  location                    = var.region
+  force_destroy               = true
 
   uniform_bucket_level_access = true
 
@@ -25,7 +25,7 @@ resource "google_storage_bucket_iam_member" "public_read" {
   member = "allUsers"
 }
 
-# Service account for the MongoDB VM
+# Create Service account for the MongoDB VM
 resource "google_service_account" "mongodb_vm" {
   account_id   = "mongodb-vm-sa"
   display_name = "MongoDB VM Service Account"

@@ -1,11 +1,11 @@
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.region
+  name                = var.cluster_name
+  location            = var.region
 
-  enable_autopilot = true
+  enable_autopilot    = true
 
-  network    = google_compute_network.vpc.id
-  subnetwork = google_compute_subnetwork.subnet.id
+  network             = google_compute_network.vpc.id
+  subnetwork          = google_compute_subnetwork.subnet.id
 
   ip_allocation_policy {
     cluster_secondary_range_name  = "pods"
