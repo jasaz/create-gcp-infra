@@ -28,9 +28,8 @@ output "artifact_registry_url" {
   description = "The Artifact Registry Docker repository URL"
   value       = "${var.region}-docker.pkg.dev/${var.project_id}/${google_artifact_registry_repository.docker.repository_id}"
 }
-/*
+
 output "gke_deployer_sa_email" {
   description = "The email of the GKE deployer service account"
   value       = google_service_account.gke_deployer.email
 }
-*/
