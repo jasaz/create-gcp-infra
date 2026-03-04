@@ -1,11 +1,11 @@
-name: "Create Terraform Infrastructure"
+name: "Terraform Infrastructure"
 
 on:
-  # workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+  # pull_request:
 
 jobs:
   terraform:
@@ -22,6 +22,8 @@ jobs:
     env:
       TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
       TF_VAR_wif_pool_id: ${{ secrets.WIF_POOL_ID }}
+      TF_VAR_mongo_admin_pass: ${{ secrets.MONGO_ADMIN_PASS }}
+      TF_VAR_mongo_app_pass: ${{ secrets.MONGO_APP_PASS }}
 
     steps:
       - name: Checkout
@@ -38,18 +40,20 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Set up Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.1.7"
+          terraform_wrapper: false
 
       - name: Terraform Init
         run: terraform init -backend-config="bucket=${{ secrets.TFSTATE_GCS_BUCKET }}"
 
       - name: Terraform Format
-        run: terraform fmt
+        run: terraform fmt -check
 
       - name: Terraform Plan
         run: terraform plan -input=false
 
       - name: Terraform Apply
-        if: github.ref == 'refs/heads/main'
         run: terraform apply -auto-approve -input=false

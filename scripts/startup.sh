@@ -9,11 +9,46 @@ echo "deb [ signed-by=/usr/share/keyrings/mongodb-server-6.0.gpg ] https://repo.
 apt-get update
 apt-get install -y mongodb-org
 
-# Configure MongoDB to listen on all interfaces (no auth)
+# Configure MongoDB to listen on all interfaces (auth enabled later)
 sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/' /etc/mongod.conf
 
 systemctl enable mongod
 systemctl start mongod
+
+# Wait for MongoDB to be ready
+for i in $(seq 1 30); do
+  if mongosh --eval "db.runCommand({ ping: 1 })" &>/dev/null; then
+    break
+  fi
+  sleep 2
+done
+
+# Create admin user
+mongosh admin --eval '
+  db.createUser({
+    user: "admin",
+    pwd: "${mongo_admin_pass}",
+    roles: [{ role: "userAdminAnyDatabase", db: "admin" }]
+  })
+'
+
+# Create application user for flaskdb
+mongosh flaskdb --eval '
+  db.createUser({
+    user: "flaskapp",
+    pwd: "${mongo_app_pass}",
+    roles: [{ role: "readWrite", db: "flaskdb" }]
+  })
+'
+
+# Enable authentication
+cat >> /etc/mongod.conf <<EOF
+
+security:
+  authorization: enabled
+EOF
+
+systemctl restart mongod
 
 # Install gsutil for backups
 apt-get install -y google-cloud-sdk
