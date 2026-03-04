@@ -34,9 +34,11 @@ resource "google_compute_instance" "mongodb" {
     email  = google_service_account.mongodb_vm.email
     scopes = ["cloud-platform"]
   }
-  # Install Mongo DB in GCE
+
   metadata_startup_script = templatefile("${path.module}/scripts/startup.sh", {
-    backup_bucket = google_storage_bucket.mongodb_backups.name
+    backup_bucket    = google_storage_bucket.mongodb_backups.name
+    mongo_admin_pass = var.mongo_admin_pass
+    mongo_app_pass   = var.mongo_app_pass
   })
 
   depends_on = [google_storage_bucket.mongodb_backups]

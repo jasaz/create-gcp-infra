@@ -15,24 +15,6 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
-variable "vpc_name" {
-  description = "Name of a VPC"
-  type        = string
-  default     = "my-vpc"
-}
-
-variable "private_subnet" {
-  description = "Name of a Private Subnet"
-  type        = string
-  default     = "private-subnet"
-}
-
-variable "public_subnet" {
-  description = "Name of a Public Subnet"
-  type        = string
-  default     = "private-subnet"
-}
-
 variable "cluster_name" {
   description = "The name of the GKE cluster"
   type        = string
@@ -84,4 +66,16 @@ variable "deployer_github_repo" {
   description = "GitHub repository allowed to impersonate the GKE deployer SA (e.g. org/repo-name)"
   type        = string
   default     = "jasaz/web-app"
+}
+
+variable "mongo_admin_pass" {
+  description = "MongoDB admin user password (set via TF_VAR_mongo_admin_pass)"
+  type        = string
+  sensitive   = true
+}
+
+variable "mongo_app_pass" {
+  description = "MongoDB application user password (set via TF_VAR_mongo_app_pass)"
+  type        = string
+  sensitive   = true
 }
