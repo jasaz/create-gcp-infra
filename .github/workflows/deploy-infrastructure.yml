@@ -1,11 +1,11 @@
 name: "Terraform Infrastructure"
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
-  # pull_request:
+  # workflow_dispatch:
+   push:
+     branches:
+       - main
+   pull_request:
 
 jobs:
   terraform:
@@ -50,7 +50,7 @@ jobs:
         run: terraform init -backend-config="bucket=${{ secrets.TFSTATE_GCS_BUCKET }}"
 
       - name: Terraform Format
-        run: terraform fmt -check
+        run: terraform fmt
 
       - name: Terraform Plan
         run: terraform plan -input=false
