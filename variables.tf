@@ -15,6 +15,24 @@ variable "zone" {
   default     = "us-central1-a"
 }
 
+variable "vpc_name" {
+  description = "Name of a VPC"
+  type        = string
+  default     = "my-vpc"
+}
+
+variable "private_subnet" {
+  description = "Name of a Private Subnet"
+  type        = string
+  default     = "private-subnet"
+}
+
+variable "public_subnet" {
+  description = "Name of a Public Subnet"
+  type        = string
+  default     = "private-subnet"
+}
+
 variable "cluster_name" {
   description = "The name of the GKE cluster"
   type        = string
