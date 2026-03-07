@@ -1,6 +1,6 @@
 # GKE Autopilot Deployment with Terraform and Workload Identity Federation
 
-This repository contains Terraform code to deploy:
+This repository contains following Terraform code:
 
 1. networking.tf - VPC, Private & Public Subnet, Router, NAT
 2. k8s.tf - GKE Autopilot
@@ -31,7 +31,7 @@ export LOCATION={GCP-REGION}
 gcloud config set project ${PROJECT_ID}
 ```
 
-# Enable the APIs
+### Enable the APIs
 ```
 gcloud services enable compute.googleapis.com \
   artifactregistry.googleapis.com \
@@ -43,13 +43,13 @@ gcloud services enable compute.googleapis.com \
   --project=${PROJECT_ID}
 ```
 
-# Create a Service account for Workload Identifier.
+### Create a Service account for Workload Identifier.
 ```
 gcloud iam service-accounts create ${GITHUB_SA} \
   --project "${PROJECT_ID}" 
 ```
 
-# Create a Workload Identity Pool for Github.
+### Create a Workload Identity Pool for Github.
 ```
 gcloud iam workload-identity-pools create "github-pool" \
   --project="${PROJECT_ID}" \
@@ -57,7 +57,7 @@ gcloud iam workload-identity-pools create "github-pool" \
   --display-name="GitHub Actions Pool"
 ```
 
-# Get the ID of the Workload Identity Pool
+### Get the ID of the Workload Identity Pool
 ```
 WORKLOAD_IDENTITY_POOL_ID=$(gcloud iam workload-identity-pools describe "github-pool" \
   --project="${PROJECT_ID}" \
@@ -65,7 +65,7 @@ WORKLOAD_IDENTITY_POOL_ID=$(gcloud iam workload-identity-pools describe "github-
   --format="value(name)")
 ```
 
-# Get the Github REPO Id. This will be used to restrict the OIDC Token for the below repos. Replace the repo name with your repos and Bearer token
+### Get the Github REPO Id. This will be used to restrict the OIDC Token for the below repos. Replace the repo name with your repos and Bearer token
 ```
 TF_REPO="jasaz/create-gcp-infra"
 APP_REPO="jasaz/deploy-webapp"
@@ -75,7 +75,7 @@ TF_REPO_ID=$(curl -sfL -H "Accept: application/json" -H "Authorization: Bearer {
 APP_REPO_ID=$(curl -sfL -H "Accept: application/json" -H "Authorization: Bearer {Your-Bearer-Token}" "https://api.github.com/repos/${APP_REPO}" | jq .id)
 ```
 
-# Create a GitHub Workload Identity Provider for both Terraform Repo and App Repo mentioned above. Restrict access to Tokens using Owner Id and Repo Id.
+### Create a GitHub Workload Identity Provider for both Terraform Repo and App Repo mentioned above. Restrict access to Tokens using Owner Id and Repo Id.
 ```
 gcloud iam workload-identity-pools providers create-oidc "gh-provider" \
   --project="${PROJECT_ID}" \
@@ -86,7 +86,7 @@ gcloud iam workload-identity-pools providers create-oidc "gh-provider" \
   --attribute-condition="assertion.repository_owner_id == '${OWNER_ID}' &&  (assertion.repository_id == '${TF_REPO_ID}' || assertion.repository_id == '${APP_REPO_ID}') "  \
   --issuer-uri="https://token.actions.githubusercontent.com"
 ```
-# Extract the Workload Identity Provider resource name. Remove provider/provider name from the above path at the end
+### Extract the Workload Identity Provider resource name. Remove provider/provider name from the above path at the end
 ```
 gcloud iam workload-identity-pools providers describe "gh-provider"   --project="${PROJECT_ID}"   --location="global"   --workload-identity-pool="github-pool"   --format="value(name)"
 ```
@@ -103,12 +103,12 @@ gcloud iam service-accounts add-iam-policy-binding "${GITHUB_SA}@${PROJECT_ID}.i
   --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-pool/attribute.repository/${APP_REPO}"
 ```
 
-# Create Bucket for Storing TF State File
+### Create Bucket for Storing TF State File
 ```
 gcloud storage buckets create gs://${BUCKET_NAME}  --location=${LOCATION}
 ```
 
-# Project Level access for the Github Service Account
+### Project Level access for the Github Service Account
 ```
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${GITHUB_SA}@${PROJECT_ID}.iam.gserviceaccount.com" --role="roles/storage.admin"
 gcloud projects add-iam-policy-binding ${PROJECT_ID} --member="serviceAccount:${GITHUB_SA}@${PROJECT_ID}.iam.gserviceaccount.com" --role="roles/compute.networkAdmin"
