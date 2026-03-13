@@ -60,7 +60,7 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/tmp/mongodb-backup-$TIMESTAMP"
 BUCKET="${backup_bucket}"
 
-mongodump --out "$BACKUP_DIR"
+mongodump --username admin --password "${mongo_admin_pass}" --authenticationDatabase admin --out "$BACKUP_DIR"
 tar -czf "$BACKUP_DIR.tar.gz" -C /tmp "mongodb-backup-$TIMESTAMP"
 gsutil cp "$BACKUP_DIR.tar.gz" "gs://$BUCKET/backups/mongodb-backup-$TIMESTAMP.tar.gz"
 
@@ -72,3 +72,7 @@ chmod +x /usr/local/bin/mongodb-backup.sh
 # Schedule daily backup at 2 AM
 echo "0 2 * * * root /usr/local/bin/mongodb-backup.sh" > /etc/cron.d/mongodb-backup
 chmod 644 /etc/cron.d/mongodb-backup
+
+# Ensure cron daemon is running
+systemctl enable cron
+systemctl start cron
