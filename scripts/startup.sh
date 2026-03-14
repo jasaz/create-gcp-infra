@@ -50,10 +50,8 @@ EOF
 
 systemctl restart mongod
 
-# Install gsutil for backups
-apt-get install -y google-cloud-sdk
-
 # Create backup script with bucket name baked in by Terraform
+
 cat > /usr/local/bin/mongodb-backup.sh << 'SCRIPT'
 #!/bin/bash
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
@@ -62,7 +60,7 @@ BUCKET="${backup_bucket}"
 
 mongodump --username admin --password "${mongo_admin_pass}" --authenticationDatabase admin --out "$BACKUP_DIR"
 tar -czf "$BACKUP_DIR.tar.gz" -C /tmp "mongodb-backup-$TIMESTAMP"
-gsutil cp "$BACKUP_DIR.tar.gz" "gs://$BUCKET/backups/mongodb-backup-$TIMESTAMP.tar.gz"
+gcloud storage cp "$BACKUP_DIR.tar.gz" "gs://$BUCKET/backups/mongodb-backup-$TIMESTAMP.tar.gz"
 
 rm -rf "$BACKUP_DIR" "$BACKUP_DIR.tar.gz"
 SCRIPT
@@ -75,4 +73,4 @@ chmod 644 /etc/cron.d/mongodb-backup
 
 # Ensure cron daemon is running
 systemctl enable cron
-systemctl start cron
+systemctl start cron  
