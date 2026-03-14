@@ -28,7 +28,10 @@ mongosh admin --eval '
   db.createUser({
     user: "admin",
     pwd: "${mongo_admin_pass}",
-    roles: [{ role: "userAdminAnyDatabase", db: "admin" }]
+    roles: [
+      { role: "userAdminAnyDatabase", db: "admin" },
+      { role: "backup", db: "admin" }
+    ]
   })
 '
 
