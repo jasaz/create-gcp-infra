@@ -11,6 +11,7 @@
 #   - compute.googleapis.com
 #   - container.googleapis.com
 #   - artifactregistry.googleapis.com
+#   - secretmanager.googleapis.com
 #
 # IAM roles granted to the service account:
 #   - roles/container.admin

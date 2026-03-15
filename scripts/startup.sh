@@ -23,26 +23,30 @@ for i in $(seq 1 30); do
   sleep 2
 done
 
+# Fetch passwords from Secret Manager
+MONGO_ADMIN_PASS=$(gcloud secrets versions access latest --secret="${admin_secret_id}")
+MONGO_APP_PASS=$(gcloud secrets versions access latest --secret="${app_secret_id}")
+
 # Create admin user
-mongosh admin --eval '
+mongosh admin --eval "
   db.createUser({
-    user: "admin",
-    pwd: "${mongo_admin_pass}",
+    user: 'admin',
+    pwd: '$MONGO_ADMIN_PASS',
     roles: [
-      { role: "userAdminAnyDatabase", db: "admin" },
-      { role: "backup", db: "admin" }
+      { role: 'userAdminAnyDatabase', db: 'admin' },
+      { role: 'backup', db: 'admin' }
     ]
   })
-'
+"
 
 # Create application user for flaskdb
-mongosh flaskdb --eval '
+mongosh flaskdb --eval "
   db.createUser({
-    user: "flaskapp",
-    pwd: "${mongo_app_pass}",
-    roles: [{ role: "readWrite", db: "flaskdb" }]
+    user: 'flaskapp',
+    pwd: '$MONGO_APP_PASS',
+    roles: [{ role: 'readWrite', db: 'flaskdb' }]
   })
-'
+"
 
 # Enable authentication
 cat >> /etc/mongod.conf <<EOF
@@ -61,7 +65,8 @@ TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR="/tmp/mongodb-backup-$TIMESTAMP"
 BUCKET="${backup_bucket}"
 
-mongodump --username admin --password "${mongo_admin_pass}" --authenticationDatabase admin --out "$BACKUP_DIR"
+MONGO_PASS=$(gcloud secrets versions access latest --secret="${admin_secret_id}")
+mongodump --username admin --password "$MONGO_PASS" --authenticationDatabase admin --out "$BACKUP_DIR"
 tar -czf "$BACKUP_DIR.tar.gz" -C /tmp "mongodb-backup-$TIMESTAMP"
 gcloud storage cp "$BACKUP_DIR.tar.gz" "gs://$BUCKET/backups/mongodb-backup-$TIMESTAMP.tar.gz"
 

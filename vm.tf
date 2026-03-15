@@ -36,9 +36,9 @@ resource "google_compute_instance" "mongodb" {
   }
 
   metadata_startup_script = templatefile("${path.module}/scripts/startup.sh", {
-    backup_bucket    = google_storage_bucket.mongodb_backups.name
-    mongo_admin_pass = var.mongo_admin_pass
-    mongo_app_pass   = var.mongo_app_pass
+    backup_bucket   = google_storage_bucket.mongodb_backups.name
+    admin_secret_id = "mongo_admin_pass"
+    app_secret_id   = "mongo_app_pass"
   })
 
   depends_on = [google_storage_bucket.mongodb_backups]

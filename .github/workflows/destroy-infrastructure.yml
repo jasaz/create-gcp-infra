@@ -24,8 +24,7 @@ jobs:
     env:
       TF_VAR_project_id: ${{ secrets.GCP_PROJECT_ID }}
       TF_VAR_wif_pool_id: ${{ secrets.WIF_POOL_ID }}
-      TF_VAR_mongo_admin_pass: ${{ secrets.MONGO_ADMIN_PASS }}
-      TF_VAR_mongo_app_pass: ${{ secrets.MONGO_APP_PASS }}
+
 
     steps:
       - name: Checkout
