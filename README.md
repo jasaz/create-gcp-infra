@@ -40,7 +40,10 @@ gcloud services enable compute.googleapis.com \
   cloudresourcemanager.googleapis.com \
   iam.googleapis.com \
   storage.googleapis.com \
+  containeranalysis.googleapis.com \
+  secretmanager.googleapis.com \
   --project=${PROJECT_ID}
+
 ```
 
 ### Create a Service account for Workload Identifier.
@@ -140,3 +143,8 @@ Following secrets must be configured in the Github Repo
 Once the secrets are set, any push to the `main` branch will trigger the workflow in `.github/workflows/deploy.yml`, which will:
 1.  Authenticate using WIF.
 2.  Plan and Apply changes to your GCP Project.
+
+## Create the following secrets in GSM manually in the region $LOCATION
+1. mongo_admin_pass
+2. mongo_app_pass
+

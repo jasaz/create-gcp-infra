@@ -14,7 +14,7 @@ resource "google_service_account_iam_member" "deployer_wif" {
 }
 
 
-# Provide the gke_deployer SA access to create GKE clusters Registry
+# Provide the gke_deployer SA access to create GKE clusters Registry and bind Cluster role
 resource "google_project_iam_member" "deployer_container_admin" {
   project = var.project_id
   role    = "roles/container.admin"

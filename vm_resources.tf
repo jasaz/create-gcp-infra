@@ -38,6 +38,20 @@ resource "google_storage_bucket_iam_member" "vm_backup_write" {
   member = "serviceAccount:${google_service_account.mongodb_vm.email}"
 }
 
+# Allow the VM SA secretAccessor to a specific secret rather than Project level
+resource "google_secret_manager_secret_iam_member" "vm_admin_pass_access" {
+  secret_id = "mongo_admin_pass"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.mongodb_vm.email}"
+}
+
+# Allow the VM SA secretAccessor to a specific secret rather than Project level
+resource "google_secret_manager_secret_iam_member" "vm_app_pass_access" {
+  secret_id = "mongo_app_pass"
+  role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.mongodb_vm.email}"
+}
+
 # Granting overly excessive permission (Project level access) to create a VM
 resource "google_project_iam_member" "vm_sa_instance_admin" {
   project = var.project_id

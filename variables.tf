@@ -85,15 +85,3 @@ variable "deployer_github_repo" {
   type        = string
   default     = "jasaz/web-app"
 }
-
-variable "mongo_admin_pass" {
-  description = "MongoDB admin user password (set via TF_VAR_mongo_admin_pass)"
-  type        = string
-  sensitive   = true
-}
-
-variable "mongo_app_pass" {
-  description = "MongoDB application user password (set via TF_VAR_mongo_app_pass)"
-  type        = string
-  sensitive   = true
-}
